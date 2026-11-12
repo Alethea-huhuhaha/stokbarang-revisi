@@ -1,7 +1,23 @@
 <?php
 session_start();
 
-$conn = mysqli_connect("localhost","root","","stokbarang");
+// Konfigurasi database.
+// Default tetap sama seperti XAMPP (localhost/root tanpa password),
+// tetapi bisa dioverride lewat environment variable saat di Docker.
+$dbHost = getenv('DB_HOST') ?: 'localhost';
+$dbPort = (int) (getenv('DB_PORT') ?: 3306);
+$dbUser = getenv('DB_USER') ?: 'root';
+$dbPass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+$dbName = getenv('DB_NAME') ?: 'stokbarang';
+
+$conn = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName, $dbPort);
+
+if (!$conn) {
+    http_response_code(500);
+    exit('Koneksi database gagal. Periksa konfigurasi DB_HOST/DB_USER/DB_PASS/DB_NAME.');
+}
+
+mysqli_set_charset($conn, 'utf8mb4');
 
 
 
